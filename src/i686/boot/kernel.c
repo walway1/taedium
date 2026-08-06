@@ -117,7 +117,7 @@ void kernel_main(void)
 	term_writestring("-------------------------");
 	term_column = 24;
 	term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
-	term_writestring("Welcome to Taedium v0.1.0 Alpha");
+	term_writestring("Welcome to Taedium v0.0.2 Alpha");
 	term_column = 55;
 	term_setcolor(vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK));
 	term_writestring("--------------------------");
