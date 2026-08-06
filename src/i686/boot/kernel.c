@@ -107,6 +107,26 @@ void term_update_cursor(int row, int col) {
     outb(0x3D4, 0x0E);
     outb(0x3D5, (uint8_t)((cursor_pos >> 8) & 0xFF));
 }
+static inline uint8_t asm_in(uint16_t port) {
+	uint8_t ret;
+	asm volatile ("inb %1, %0" : "=a"(ret) : "Nd"(port));
+	return ret;
+}
+void convert_hex(uint8_t data, char *out) {
+	const char hex_chars[] = "0123456789ABCDEF";
+	out[0] = '0';
+	out[1] = 'x';
+	out[2] = hex_chars[(data >> 4) & 0xF];
+	out[3] = hex_chars[data & 0xF];
+	out[4] = '\0';
+
+}
+void term_print_port(uint16_t port) {
+	uint8_t val = asm_in(port);
+	char buf[5];
+	convert_hex(val, buf);
+	term_write(buf, strlen(buf));
+}
 void kernel_main(void) 
 {
 	*(volatile uint32_t*)0xB80BC = 0x0A4F0F5B;
@@ -126,5 +146,19 @@ void kernel_main(void)
 	term_setcolor(vga_entry_color(VGA_LIGHT_GREEN, VGA_BLACK));
 	term_update_cursor(3, 8);
 	term_writestring("Taedium>");
-
+	term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
+	term_print_port(0x60);
+	size_t loop;
+	while (true) {
+		if (loop < 10000) {
+			loop += 1;
+		}
+		else {
+			term_row = 3;
+			term_column = 8;
+			term_print_port(0x60);
+			loop = 0;
+		}
+	}
+		
 }
