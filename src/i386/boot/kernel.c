@@ -96,7 +96,17 @@ void term_writestring(const char* data)
 {
 	term_write(data, strlen(data));
 }
-    
+static inline void outb(uint16_t port, uint8_t val) {
+    asm volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
+}
+void term_update_cursor(int row, int col) {
+    uint16_t cursor_pos = row * 80 + col;
+
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, (uint8_t)(cursor_pos & 0xFF));
+    outb(0x3D4, 0x0E);
+    outb(0x3D5, (uint8_t)((cursor_pos >> 8) & 0xFF));
+}
 void kernel_main(void) 
 {
 	*(volatile uint32_t*)0xB80BC = 0x0A4F0F5B;
@@ -113,7 +123,8 @@ void kernel_main(void)
 	term_writestring("--------------------------");
 	term_row = 3;
 	term_column = 0;
-	term_setcolor(vga_entry_color(VGA_GREEN, VGA_BLACK));
+	term_setcolor(vga_entry_color(VGA_LIGHT_GREEN, VGA_BLACK));
+	term_update_cursor(3, 8);
 	term_writestring("Taedium>");
 
 }

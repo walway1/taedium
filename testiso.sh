@@ -1,1 +1,1 @@
-qemu-system-i386 -cdrom taedium.iso
+qemu-system-x86_64 -cdrom taedium.iso
