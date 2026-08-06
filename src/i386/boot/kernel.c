@@ -53,7 +53,7 @@ uint16_t* term_buffer = (uint16_t*)VGA_MEMORY;
 
 void term_init(void) 
 {
-	term_row = 3;
+	term_row = 0;
 	term_column = 0;
 	term_color = vga_entry_color(VGA_WHITE, VGA_BLACK);
 	
@@ -96,10 +96,24 @@ void term_writestring(const char* data)
 {
 	term_write(data, strlen(data));
 }
-
+    
 void kernel_main(void) 
 {
-	term_init();
+	*(volatile uint32_t*)0xB80BC = 0x0A4F0F5B;
+    *(volatile uint32_t*)0xB80C0 = 0x0F5D0A4B;
+	term_row = 2;
+	term_column = 0;
+	term_setcolor(vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK));
+	term_writestring("-------------------------");
+	term_column = 24;
+	term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
+	term_writestring("Welcome to Taedium v0.1.0 Alpha");
+	term_column = 55;
+	term_setcolor(vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK));
+	term_writestring("--------------------------");
+	term_row = 3;
+	term_column = 0;
+	term_setcolor(vga_entry_color(VGA_GREEN, VGA_BLACK));
+	term_writestring("Taedium>");
 
-	term_writestring("HOLY SHITTT TEXT MODE !!!!!!!!!!!");
 }
