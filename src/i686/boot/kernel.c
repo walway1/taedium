@@ -52,19 +52,7 @@ uint8_t tcolor;
 uint16_t* term_buffer = (uint16_t*)VGA_MEMORY;
 uint8_t read_port;
 
-void term_init(void) 
-{
-	trow = 0;
-	tcol = 0;
-	tcolor = vga_entry_color(VGA_WHITE, VGA_BLACK);
-	
-	for (size_t y = 0; y < VGA_HEIGHT; y++) {
-		for (size_t x = 0; x < VGA_WIDTH; x++) {
-			const size_t index = y * VGA_WIDTH + x;
-			term_buffer[index] = vga_entry(' ', tcolor);
-		}
-	}
-}
+
 
 void term_setcolor(uint8_t color) 
 {
@@ -103,13 +91,14 @@ void term_write(const char* data, size_t size)
 		term_putchar(data[i]);
 
 }
-
+void term_cursor_sync(void) {
+	term_set_cursor(trow, tcol);
+}
 void term_writestring(const char* data) 
 {
 	term_write(data, strlen(data));
-	term_set_cursor(trow, tcol + strlen(data)/2);
+	term_cursor_sync();
 }
-
 static inline uint8_t asm_in(uint16_t port) {
 	uint8_t ret;
 	asm volatile ("inb %1, %0" : "=a"(ret) : "Nd"(port));
@@ -130,38 +119,53 @@ void term_print_port(uint16_t port) {
 	convert_hex(val, buf);
 	term_write(buf, strlen(buf));
 }
-
 void hlt(void) {
 	__asm__ volatile ("hlt");
 }
+
+void term_init(void) 
+{
+
+	trow = 2;
+	tcol = 0;
+	term_setcolor(vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK));
+	term_writestring("------------------------");
+	term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
+	term_writestring("Welcome to Taedium v0.0.3 Alpha");
+	term_setcolor(vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK));
+	term_writestring("-------------------------");
+	term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
+	term_writestring("Taedium (trans. Boredom) is an i686 monolithic kernel written in C based on the OS-Dev Wiki Bare-Bones tutorial. It is a hobby project with no means of becoming widely used.");
+	trow = 0;
+	tcol = 66;
+	term_write("Port 0x60:", strlen("Port 0x60:"));
+	trow = 6;
+        tcol = 0;	
+	term_setcolor(vga_entry_color(VGA_LIGHT_GREEN, VGA_BLACK));
+	term_writestring("Taedium>");
+	term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
+	term_cursor_sync();
+}
+
 void kernel_main(void) 
 {
 	*(volatile uint32_t*)0xB80BC = 0x0A4F0F5B;
     *(volatile uint32_t*)0xB80C0 = 0x0F5D0A4B;
-	trow = 2;
-	tcol = 0;
-	term_setcolor(vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK));
-	term_writestring("-------------------------");
-	tcol = 24;
-	term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
-	term_writestring("Welcome to Taedium v0.0.2 Alpha");
-	tcol = 55;
-	term_setcolor(vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK));
-	term_writestring("--------------------------");
-	trow = 3;
-	tcol = 0;
-	term_setcolor(vga_entry_color(VGA_LIGHT_GREEN, VGA_BLACK));
-	term_writestring("Taedium>");
-	term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
-	term_set_cursor(3, 8);
+	term_init();
 
 while (true) {
-    for (volatile uint32_t i = 0; i < 49000000; i++) {
-
-    }
+    for (volatile uint32_t i = 0; i < 35000000; i++) {}
 
     if (asm_in(0x60) == 0x1E) {
         term_writestring("a");
     }
+    else if (asm_in(0x60) == 0x1C) {
+	trow += 1;
+	tcol = 0;
+	term_setcolor(vga_entry_color(VGA_LIGHT_GREEN, VGA_BLACK));
+	term_writestring("Taedium>");
+	term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
 }
 }
+}
+// May this program compile flawlessly with zero bugs from now until ever, AMEN! 
