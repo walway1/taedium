@@ -67,23 +67,27 @@ void term_putentryat(char c, uint8_t color, size_t x, size_t y)
 
 void term_putchar(char c) 
 {
+if (c != 0) {
+
 	term_putentryat(c, tcolor, tcol, trow);
-	if (++tcol == VGA_WIDTH) {
-		tcol = 0;
-		if (++trow == VGA_HEIGHT)
-			trow = 0;
-	}
+		if (++tcol == VGA_WIDTH) {
+			tcol = 0;
+			if (++trow == VGA_HEIGHT)
+				trow = 0;
+	
 }
-static inline void outb(uint16_t port, uint8_t val) {
+}
+}
+static inline void asm_out(uint16_t port, uint8_t val) {
     asm volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
 }
 void term_set_cursor(int row, int col) {
     uint16_t cursor_pos = row * 80 + col;
 
-    outb(0x3D4, 0x0F);
-    outb(0x3D5, (uint8_t)(cursor_pos & 0xFF));
-    outb(0x3D4, 0x0E);
-    outb(0x3D5, (uint8_t)((cursor_pos >> 8) & 0xFF));
+    asm_out(0x3D4, 0x0F);
+    asm_out(0x3D5, (uint8_t)(cursor_pos & 0xFF));
+    asm_out(0x3D4, 0x0E);
+    asm_out(0x3D5, (uint8_t)((cursor_pos >> 8) & 0xFF));
 }
 void term_write(const char* data, size_t size) 
 {
@@ -122,7 +126,53 @@ void term_print_port(uint16_t port) {
 void hlt(void) {
 	__asm__ volatile ("hlt");
 }
+static char scancode_to_char(void) {
+	uint8_t kbport = asm_in(0x60);
+	switch (kbport) {
+		case 0x10: return 'Q';
+		case 0x11: return 'W'; 
+		case 0x12: return 'E';
+		case 0x13: return 'R';	   
+		case 0x14: return 'T';
+		case 0x15: return 'Y';
+		case 0x16: return 'U';
+		case 0x17: return 'I';
+		case 0x18: return 'O';
+		case 0x19: return 'P';
+		case 0x1A: return '[';
+		case 0x1B: return ']';
+		case 0x1E: return 'A';
+		case 0x1F: return 'S';
+		case 0x20: return 'D';
+		case 0x21: return 'F';
+		case 0x22: return 'G';
+		case 0x23: return 'H';
+		case 0x24: return 'J';
+		case 0x25: return 'K';
+		case 0x26: return 'L';
+		case 0x27: return ';';
+		case 0x28: return '\'';
+		case 0x29: return '`';
+		case 0x2B: return '\\';
+		case 0x2C: return 'Z';
+		case 0x2D: return 'X';
+		case 0x2E: return 'C';
+		case 0x2F: return 'V';
+		case 0x30: return 'B';
+		case 0x31: return 'N';
+		case 0x32: return 'M';
+		case 0x33: return ',';
+		case 0x34: return '.';
+		case 0x35: return '/';
+		case 0x39: return ' ';
+		case 0x0E: return '\b';
+		case 0x90:
+		default:
+			   return 0;
 
+	}
+}
+	
 void term_init(void) 
 {
 
@@ -136,9 +186,6 @@ void term_init(void)
 	term_writestring("-------------------------");
 	term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
 	term_writestring("Taedium (trans. Boredom) is an i686 monolithic kernel written in C based on the OS-Dev Wiki Bare-Bones tutorial. It is a hobby project with no means of becoming widely used.");
-	trow = 0;
-	tcol = 66;
-	term_write("Port 0x60:", strlen("Port 0x60:"));
 	trow = 6;
         tcol = 0;	
 	term_setcolor(vga_entry_color(VGA_LIGHT_GREEN, VGA_BLACK));
@@ -150,22 +197,15 @@ void term_init(void)
 void kernel_main(void) 
 {
 	*(volatile uint32_t*)0xB80BC = 0x0A4F0F5B;
-    *(volatile uint32_t*)0xB80C0 = 0x0F5D0A4B;
+	*(volatile uint32_t*)0xB80C0 = 0x0F5D0A4B;
 	term_init();
 
 while (true) {
     for (volatile uint32_t i = 0; i < 35000000; i++) {}
+    term_putchar(scancode_to_char());
+    term_cursor_sync();
+}
+}
 
-    if (asm_in(0x60) == 0x1E) {
-        term_writestring("a");
-    }
-    else if (asm_in(0x60) == 0x1C) {
-	trow += 1;
-	tcol = 0;
-	term_setcolor(vga_entry_color(VGA_LIGHT_GREEN, VGA_BLACK));
-	term_writestring("Taedium>");
-	term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
-}
-}
-}
+
 // May this program compile flawlessly with zero bugs from now until ever, AMEN! 
