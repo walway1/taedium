@@ -20,9 +20,7 @@ enum vga_color {
 	VGA_LIGHT_BROWN = 14,
 	VGA_WHITE = 15,
 };
-
-static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg)
-{
+static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg){
 	return fg | bg << 4;
 }
 
@@ -78,7 +76,7 @@ if (c != 0 && c != '\b') {
 }
 }
 else if (c == '\b') {
-	if (tcol >= 9) { tcol -= 1; }  
+	if (tcol != 1) { tcol -= 1; }
 	term_putentryat(' ', tcolor, tcol, trow);
 
 }
@@ -131,10 +129,14 @@ void term_print_port(uint16_t port) {
 void hlt(void) {
 	__asm__ volatile ("hlt");
 }
+static bool shift_pressed;
 static char scancode_to_char(uint8_t port, bool shift) {
 	uint8_t kbport = asm_in(port);
 	switch (kbport) {
-       		case 0x13: return shift ? 'R' :	'r';
+		case 0x10: return shift ? 'Q' : 'q';
+		case 0x11: return shift ? 'W' : 'w';
+		case 0x12: return shift ? 'E' : 'e';
+		case 0x13: return shift ? 'R' :	'r';
 		case 0x14: return shift ? 'T' : 't';
 		case 0x15: return shift ? 'Y' : 'y';
 		case 0x16: return shift ? 'U' : 'u';
@@ -169,18 +171,16 @@ static char scancode_to_char(uint8_t port, bool shift) {
 		case 0x39: return ' ' ;
 		case 0x0E: return '\b' ;
 		default: return 0;
-
 	}
 }
 void term_kb_write(void) {
-	if (asm_in(0x60) == 0x2A || asm_in(0x60) == 0x36) {
-		term_putchar(scancode_to_char(0x60, 1));
-		term_cursor_sync();
-	}
-	else {
-		term_putchar(scancode_to_char(0x60, 0));
-		term_cursor_sync();
-	}
+	if ((asm_in(0x64) & 1) == 0) {}
+	uint8_t kb = asm_in(0x60);
+	if (kb == 0x2A || kb == 0x36) { shift_pressed = 1; }
+	if (kb == 0xAA || kb == 0xB6) { shift_pressed = 0; }
+	term_putchar(scancode_to_char(0x60, shift_pressed));
+	term_cursor_sync();
+
 }
 void term_init(void) 
 {
@@ -210,7 +210,7 @@ void kernel_main(void)
 	term_init();
 
 while (true) {
-    for (volatile uint32_t i = 0; i < 37500000; i++) {}
+    for (volatile uint32_t i = 0; i < 35000000; i++) {}
     term_kb_write();
 }
 }
