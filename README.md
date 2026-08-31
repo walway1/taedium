@@ -1,4 +1,33 @@
 # Taedium
+
 Taedium (trans. Boredom) is an i686 monolithic kernel operating system I made out of pure boredom. Most code is... "borrowed" from the OS-Dev wiki's Bare-Bones tutorial.
-## How to compile Taedium
-To compile Taedium, you need an i686-elf c, ld and asm cross-compiler. See [this](https://wiki.osdev.org/GCC_Cross-Compiler) guide on building your own i686-elf cross-compiler. After, you can just run ``./makeiso.sh`` to make a bootable iso. If you want to burn it to a USB stick to test on real hardware, you can run ``./testiso-rh.sh``
+
+
+
+# Building Taedium
+
+To prepare for the build, you need to:
+
+1. Make i686-elf cross compilers following [this](https://wiki.osdev.org/GCC_Cross-Compiler) guide 
+
+2. Satisfy dependencies by running `getdeps.sh`
+
+Afterwards, you should be able to run one of the scripts to build Taedium.
+
+# Scripts
+
+## getdeps.sh
+
+A script to check and install missing dependencies. This script does not install the cross compilers.
+
+## testtd.sh
+
+A script to build Taedium and test it using QEMU.
+
+## testtd-rh.sh
+
+A script to build Taedium and test it on real hardware by burning the ISO on a block device.
+
+## makeiso.sh
+
+A script to build Taedium and output an ISO.

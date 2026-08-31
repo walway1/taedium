@@ -1,19 +1,20 @@
-cc = i686-elf-gcc 
-as = i686-elf-as 
-c = src/i686/boot/kernel.c 
-asm = src/i686/boot/boot.s
-ld = targets/i686/iso/boot/linker.ld
+CC = i686-elf-gcc
+AS = i686-elf-as
+C = kernel/main.c kernel/kb.c kernel/term.c
+CH = kernel/main.h kernel/kb.h kernel/term.h kernel/vga.h
+OBJ = kernel/main.o kernel/kb.o kernel/term.o boot/boot.o
+LD = iso/boot/linker.ld
 all: taedium
 
-taedium: $(ld) src/i686/boot/boot.o src/i686/boot/kernel.o 
-	$(cc) -T $(ld) -o taedium -ffreestanding -nostdlib src/i686/boot/boot.o src/i686/boot/kernel.o  -fno-use-linker-plugin 
-src/i686/boot/boot.o: src/i686/boot/boot.s
-	$(as) src/i686/boot/boot.s -o src/i686/boot/boot.o
-src/i686/boot/kernel.o: src/i686/boot/kernel.c
-	$(cc) -c src/i686/boot/kernel.c -o src/i686/boot/kernel.o -std=gnu99 -ffreestanding -Wall -Wextra -I	src/i686/boot
+taedium: $(OBJ)
+	$(CC) -T $(LD) -o taedium -ffreestanding -nostdlib $(OBJ) -fno-use-linker-plugin
+boot/boot.o: boot/boot.s
+	$(AS) boot/boot.s -o boot/boot.o
+kernel/%.o: kernel/%.c
+	$(CC) -c $< -o $@ -s -std=gnu99 -ffreestanding -Wall -Wextra -I kernel/
 clean:
 	find . -type f -name "*.o" -delete
-	find . -type f -name "taedium" -delete
-	find . -type f -name "Taedium" -delete
-	rm -f taedium.iso
- 
+	find . -type f -iname "taedium" -delete
+	rm -rf taedium.iso
+configure:
+	@echo "This project isn't that advanced yet :)"
