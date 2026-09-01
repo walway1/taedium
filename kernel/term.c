@@ -73,15 +73,18 @@ void term_fill(uint8_t color) {
     tcolor = color;
     trow = 0;
     tcol = 0;
-    while (true) {
+
+    for (int i = 0; i < 80 * 25; i++) {
         term_putchar(' ');
-        if (tcol == VGA_WIDTH && trow == VGA_HEIGHT) {
-            tcol = 0;
-            trow = 0;
-            break;
-        }
     }
+
+    trow = 0;
+    tcol = 0;
+    term_cursor_sync();
+    return;
 }
+
+
 void term_kb_write(void) {
     if ((asm_in(0x64) & 1) == 0) {}
     uint8_t kb = asm_in(0x60);
@@ -92,9 +95,13 @@ void term_kb_write(void) {
     if (kb == 0x23 && ctrl_pressed == 1) {
         trow = 12;
         tcol = 8;
-        vga_entry_color(VGA_RED, VGA_BLACK);
+        term_setcolor(vga_entry_color(VGA_RED, VGA_BLACK));
         term_writestring("Notice: You will have to restart your machine to un-halt the CPU.");
         hlt();
+    }
+    if (kb == 0x2E && ctrl_pressed == 1) {
+        term_fill(vga_entry_color(VGA_WHITE, VGA_BLACK));
+        return;
     }
     term_putchar(scancode_to_char(0x60, shift_pressed));
     term_cursor_sync();
@@ -119,7 +126,11 @@ void term_init(void)
     term_setcolor(vga_entry_color(VGA_WHITE, VGA_RED));
     term_writestring("Ctrl + H");
     term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
-    term_writestring(" to halt the CPU.");
+    term_writestring(" to halt the CPU and ");
+    term_setcolor(vga_entry_color(VGA_WHITE, VGA_RED));
+    term_writestring("Ctrl + C");
+    term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
+    term_writestring(" to clear the screen.");
     trow += 1;
     tcol = 0;
     term_setcolor(vga_entry_color(VGA_LIGHT_GREEN, VGA_BLACK));
