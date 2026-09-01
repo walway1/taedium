@@ -14,6 +14,8 @@ To prepare for the build, you need to:
 
 Afterwards, you should be able to run one of the scripts to build Taedium.
 
+You need Cygwin or WSL to build Taedium on Windows.
+
 # Scripts
 
 ## getdeps.sh
