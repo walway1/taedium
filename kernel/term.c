@@ -93,10 +93,13 @@ void term_kb_write(void) {
     if (kb == 0x1D) { ctrl_pressed = 1; }
     if (kb == 0x9D) { ctrl_pressed = 0; }
     if (kb == 0x23 && ctrl_pressed == 1) {
+        term_fill(vga_entry_color(VGA_WHITE, VGA_BLACK));
+        term_setcolor(vga_entry_color(VGA_RED, VGA_BLACK));
         trow = 12;
         tcol = 8;
-        term_setcolor(vga_entry_color(VGA_RED, VGA_BLACK));
         term_writestring("Notice: You will have to restart your machine to un-halt the CPU.");
+        term_setcolor(vga_entry_color(VGA_BLACK, VGA_BLACK));
+        term_cursor_sync();
         hlt();
     }
     if (kb == 0x2E && ctrl_pressed == 1) {
