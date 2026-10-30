@@ -6,5 +6,5 @@ if [ $? -ne 0 ]; then
 else
     cd scripts/
     ./makeiso.sh
-    qemu-system-x86_64 -cdrom ../taedium.iso
+    qemu-system-x86_64 -cdrom ../taedium.iso -audiodev alsa,id=snd0 -machine pcspk-audiodev=snd0
 fi

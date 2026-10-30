@@ -9,6 +9,9 @@ elif command -v zypper > /dev/null 2>&1; then
     sudo zypper install grub2 xorriso qemu-x86
 elif command -v pacman > /dev/null 2>&1; then
     sudo pacman -S --needed grub libisoburn qemu-desktop
+elif command -v emerge > /dev/null 2>&1; then
+    sudo emerge -av sys-boot/grub sys-boot/os-prober app-cdr/xorriso app-emulation/qemu
+    doas emerge -av sys-boot/grub sys-boot/os-prober app-cdr/xorriso app-emulation/qemu
 else
     echo "No known package manager found. Please notify the dev(s)."
     exit 1

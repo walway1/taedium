@@ -101,7 +101,7 @@ void term_kbwrite(void) {
     if (kb == 0xAA || kb == 0xB6) { shift_pressed = 0; }
     if (kb == 0x1D) { ctrl_pressed = 1; }
     if (kb == 0x9D) { ctrl_pressed = 0; }
-    if (kb == 0x23 && ctrl_pressed == 1) {
+  /*  if (kb == 0x23 && ctrl_pressed == 1) {
         term_fill(vga_entry_color(VGA_WHITE, VGA_BLACK));
         term_setcolor(vga_entry_color(VGA_RED, VGA_BLACK));
         trow = 12;
@@ -110,7 +110,7 @@ void term_kbwrite(void) {
         term_setcolor(vga_entry_color(VGA_BLACK, VGA_BLACK));
         term_cursorsync();
         hlt();
-    }
+    } */
     if (kb == 0x2E && ctrl_pressed == 1) {
         term_fill(vga_entry_color(VGA_WHITE, VGA_BLACK));
         return;
@@ -137,26 +137,28 @@ void term_kbwrite(void) {
 */
 void term_init(void) {
     trow = 2;
+    for (int i = 0; i < 80*23; i++) {term_putchar(' ');}
+    trow = 2;
     tcol = 0;
-    term_setcolor(vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK));
-    term_writestring("-------------------------");
-    term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
-    term_writestring("Welcome to Taedium v0.0.3 Build 1");
     term_setcolor(vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK));
     term_writestring("------------------------");
     term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
-    term_writestring("Taedium (trans. Boredom) is an i686 monolithic kernel written in C based on the OS-Dev Wiki Bare-Bones tutorial. It is a hobby project with no means of becomingwidely used.");
+    term_writestring("Welcome to Taedium v0.0.3 Build 1");
+    term_setcolor(vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK));
+    term_writestring("-----------------------");
+    term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
+   /* term_writestring("Taedium (trans. Boredom) is an i686 monolithic kernel written in C based on the OS-Dev Wiki Bare-Bones tutorial. It is a hobby project with no means of becomingwidely used.");
     trow += 1;
-    tcol = 0;
+    tcol = 0; */
     term_writestring("Commands:");
     term_setcolor(vga_entry_color(VGA_WHITE, VGA_RED));
-    term_writestring("Ctrl + H");
+   /* term_writestring("Ctrl + H");
     term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
     term_writestring(" halts the CPU ");
-    term_setcolor(vga_entry_color(VGA_WHITE, VGA_RED));
+    term_setcolor(vga_entry_color(VGA_WHITE, VGA_RED)); */
     term_writestring("Ctrl + C");
     term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
-    term_writestring(" clears the screen ");
+    term_writestring(" clears the screen, ");
     term_setcolor(vga_entry_color(VGA_WHITE, VGA_RED));
     term_writestring("Ctrl + P");
     term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
