@@ -36,9 +36,7 @@ void kernel_main(void) {
 	term_init();
 	while (true) {
 		for (volatile uint32_t i = 0; i < 35000000; i++) {}
-		term_kb_write();
+		term_kbwrite();
 	}
 }
-
-
 // May this program compile flawlessly with zero bugs from now until ever, AMEN! 

@@ -20,7 +20,7 @@ enum vga_color {
 	VGA_LIGHT_CYAN = 11,
 	VGA_LIGHT_RED = 12,
 	VGA_LIGHT_MAGENTA = 13,
-	VGA_LIGHT_BROWN = 14,
+	VGA_YELLOW = 14,
 	VGA_WHITE = 15,
 };
 static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg){

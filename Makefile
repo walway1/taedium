@@ -1,8 +1,8 @@
 CC = i686-elf-gcc
 AS = i686-elf-as
-C = kernel/main.c kernel/kb.c kernel/term.c
-CH = kernel/main.h kernel/kb.h kernel/term.h kernel/vga.h
-OBJ = kernel/main.o kernel/kb.o kernel/term.o boot/boot.o
+C = kernel/main.c kernel/kb.c kernel/term.c kernel/panic.c
+CH = kernel/main.h kernel/kb.h kernel/term.h kernel/vga.h kernel/panic.h
+OBJ = kernel/main.o kernel/kb.o kernel/term.o boot/boot.o kernel/panic.o
 LD = iso/boot/linker.ld
 all: taedium
 

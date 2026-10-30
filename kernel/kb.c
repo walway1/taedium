@@ -51,6 +51,7 @@ char scancode_to_char(uint8_t port, bool shift) {
 		case 0x35: return shift ? '?' : '/';
 		case 0x39: return ' ' ;
 		case 0x0E: return '\b' ;
+		case 0x1C: return '\n' ;
 		default: return 0;
 	}
 }
