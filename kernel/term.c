@@ -143,7 +143,7 @@ void term_init(void) {
     term_setcolor(vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK));
     term_writestring("----------------------");
     term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
-    term_writestring("Welcome to Taedium v0.0.3 Build 0038");
+    term_writestring("Welcome to Taedium v0.0.3 Build 0040");
     term_setcolor(vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK));
     term_writestring("----------------------");
     term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
