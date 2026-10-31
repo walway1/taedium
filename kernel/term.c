@@ -141,11 +141,11 @@ void term_init(void) {
     trow = 2;
     tcol = 0;
     term_setcolor(vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK));
-    term_writestring("------------------------");
+    term_writestring("----------------------");
     term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
-    term_writestring("Welcome to Taedium v0.0.3 Build 1");
+    term_writestring("Welcome to Taedium v0.0.3 Build 0038");
     term_setcolor(vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK));
-    term_writestring("-----------------------");
+    term_writestring("----------------------");
     term_setcolor(vga_entry_color(VGA_WHITE, VGA_BLACK));
    /* term_writestring("Taedium (trans. Boredom) is an i686 monolithic kernel written in C based on the OS-Dev Wiki Bare-Bones tutorial. It is a hobby project with no means of becomingwidely used.");
     trow += 1;

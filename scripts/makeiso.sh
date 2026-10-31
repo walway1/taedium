@@ -1,29 +1,46 @@
-mv ../taedium ../iso/boot/Taedium
-mflags=""
-while getopts ":f" option "$@"; do
-	case $option in
-		f)
-			mflags="biosdisk memdisk multiboot normal play part_msdos"
+#!/bin/bash
+
+mflags="biosdisk multiboot normal part_msdos"
+j="play"
+medium="iso9660"
+modules=""
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+		-h|--help)
+			echo "Flags for makeiso.sh:
+	-f, --floppy
+		Build ISO for a floppy disk instead of a CD/DVD/USB
+		Warning: Will not work on 720KB DD floppies
+	-nj, --no-jingle
+		Build ISO without the startup jingle (saves 4KiB)"
+			exit 0
+			;;
+		-f|--floppy)
+			medium="memdisk"
+			shift
+			;;
+		-nj|--no-jingle)
+			j=""
+			shift
 			;;
 		*)
-			mflags="biosdisk iso9660 multiboot normal play part_msdos"
+			echo "Error: Unknown flag '$1'"
+			exit 1
 			;;
 	esac
 done
-
-if [ -z "$mflags" ]; then
-	mflags="biosdisk iso9660 multiboot normal play part_msdos"
-fi
+modules="$mflags $j $medium"
+mv ../taedium ../iso/boot/Taedium
 if ! type "grub2-mkrescue" > /dev/null; then
 	grub-mkrescue -o ../taedium.iso ../iso/ \
 		--locales="" \
 		--fonts="" \
 		--directory=/usr/lib/grub/i386-pc \
-		--install-modules="$mflags"
+		--install-modules="$modules"
 else
 	grub2-mkrescue -o ../taedium.iso ../iso/ \
 		--locales="" \
 		--fonts="" \
 		--directory=/usr/lib/grub/i386-pc \
-		--install-modules="$mflags"
+		--install-modules="$modules"
 fi
